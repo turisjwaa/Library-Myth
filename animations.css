@@ -1,0 +1,301 @@
+/* =========================================================
+   Library Myth — lapisan animasi & interaksi
+   Dimuat SETELAH style.css. Tidak mengubah logika aplikasi.
+   ========================================================= */
+
+:root {
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+/* ---------- Fokus keyboard yang jelas ---------- */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Transisi dasar tombol ---------- */
+.primary-btn, .small-btn, .status-btn, .tab, .nav-btn {
+  transition: background .2s, color .2s, border-color .2s,
+              transform .15s var(--ease), box-shadow .2s;
+}
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(135, 99, 30, .3);
+}
+.small-btn:hover, .status-btn:hover { transform: translateY(-1px); }
+.primary-btn:active, .small-btn:active, .status-btn:active, .tab:active {
+  transform: scale(.96);
+}
+
+/* Efek ripple saat tombol ditekan */
+.rp-host { position: relative; overflow: hidden; }
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .25;
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple .6s ease-out forwards;
+}
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+/* Status bacaan "pop" saat dipilih */
+.status-btn.active { animation: pop .4s var(--ease); }
+@keyframes pop {
+  0%   { transform: scale(.9); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- Navbar ---------- */
+.navbar { transition: box-shadow .3s, height .3s var(--ease); }
+.navbar.scrolled { box-shadow: 0 6px 24px rgba(65, 48, 20, .1); }
+@media (min-width: 851px) {
+  .navbar.scrolled { height: 60px; }
+}
+
+nav { position: relative; }
+.nav-ind {
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  height: 3px;
+  width: 0;
+  border-radius: 3px;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .4s var(--ease), width .4s var(--ease), opacity .2s;
+}
+.nav-ind.ready { opacity: 1; }
+
+.logo { cursor: default; }
+.logo:hover { animation: wiggle .6s ease-in-out; }
+@keyframes wiggle {
+  0%, 100% { rotate: 0deg; }
+  25% { rotate: -4deg; }
+  75% { rotate: 4deg; }
+}
+
+/* Bar progres scroll + tombol kembali ke atas */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 40;
+  pointer-events: none;
+}
+.to-top {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent-dark);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  z-index: 15;
+  opacity: 0;
+  translate: 0 16px;
+  pointer-events: none;
+  transition: opacity .3s, translate .35s var(--ease), transform .2s, background .2s;
+}
+.to-top.show { opacity: 1; translate: 0 0; pointer-events: auto; }
+.to-top:hover { transform: translateY(-3px); background: #6f5018; }
+
+/* ---------- Transisi antar halaman ---------- */
+.page.active { animation: pageIn .45s var(--ease); }
+@keyframes pageIn {
+  from { opacity: 0; translate: 0 12px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, #fffdf8, #f1e5cb, #fffdf8, #eadbb8);
+  background-size: 300% 300%;
+  animation: heroShift 16s ease-in-out infinite;
+}
+@keyframes heroShift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+.hero > * { position: relative; z-index: 1; }
+
+/* Cahaya yang mengikuti kursor */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx, 70%) var(--my, 40%),
+              rgba(255, 255, 255, .6), transparent 60%);
+  opacity: 0;
+  transition: opacity .4s;
+}
+.hero:hover::after { opacity: 1; }
+
+/* Urutan masuk teks hero */
+.page.active .hero > div:first-child > * { animation: rise .8s var(--ease) backwards; }
+.hero > div:first-child > :nth-child(1) { animation-delay: .05s; }
+.hero > div:first-child > :nth-child(2) { animation-delay: .15s; }
+.hero > div:first-child > :nth-child(3) { animation-delay: .3s; }
+.hero > div:first-child > :nth-child(4) { animation-delay: .45s; }
+@keyframes rise {
+  from { opacity: 0; translate: 0 22px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* Buku melayang, bergeser mengikuti kursor, berputar saat diklik */
+.hero-book {
+  cursor: pointer;
+  user-select: none;
+  transform: translate(var(--px, 0px), var(--py, 0px));
+  transition: transform .25s ease-out;
+  animation: floaty 5s ease-in-out infinite;
+}
+.hero-book.spin { animation: floaty 5s ease-in-out infinite, flip .9s var(--ease); }
+@keyframes floaty {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -14px; }
+}
+@keyframes flip {
+  0%   { rotate: 0deg; scale: 1; }
+  40%  { scale: 1.25; }
+  100% { rotate: 360deg; scale: 1; }
+}
+
+/* ---------- Muncul saat di-scroll (diatur oleh JS) ---------- */
+.book-card, .discussion, .challenge, .stats > div, .admin-card {
+  transition: transform .25s ease-out, box-shadow .25s ease-out, border-color .2s;
+}
+.rv {
+  opacity: 0;
+  translate: 0 26px;
+  transition: opacity .65s var(--ease) var(--d, 0ms),
+              translate .65s var(--ease) var(--d, 0ms),
+              transform .25s ease-out,
+              box-shadow .25s ease-out,
+              border-color .2s;
+}
+.rv.rv-in { opacity: 1; translate: 0 0; }
+
+/* ---------- Kartu buku: miring 3D + kilau ---------- */
+.book-card {
+  position: relative;
+  transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1);
+}
+.book-card.tilting {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.025);
+  box-shadow: 0 22px 40px rgba(65, 48, 20, .18);
+}
+.book-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 0%),
+              rgba(255, 255, 255, .38), transparent 60%);
+  opacity: 0;
+  transition: opacity .25s;
+}
+.book-card.tilting::after { opacity: 1; }
+
+.cover img { transition: transform .6s var(--ease), opacity .5s; }
+.book-card:hover .cover img { transform: scale(1.06); }
+
+/* Cover: kerangka berkilau selama gambar dimuat */
+.cover img.cover-pending { opacity: 0; }
+.cover:has(img.cover-pending) {
+  background: linear-gradient(100deg, #e7dcc6 30%, #f6eedd 50%, #e7dcc6 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ---------- Kartu lain ---------- */
+.discussion.clickable:hover { transform: translateX(6px); }
+.challenge:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.stats > div:hover, .admin-card:hover { transform: translateY(-4px); }
+
+/* Progres tantangan terisi dari kiri */
+.progress div {
+  transform-origin: left;
+  animation: fill 1s var(--ease) .2s backwards;
+}
+@keyframes fill { from { transform: scaleX(0); } }
+
+/* ---------- Pencarian ---------- */
+.search { transition: width .3s var(--ease), border-color .2s, box-shadow .2s; }
+.search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(184, 137, 50, .15);
+}
+@media (min-width: 851px) {
+  .search:focus { width: 360px; }
+}
+
+/* ---------- Modal ---------- */
+.modal.show { animation: fadeIn .25s ease; backdrop-filter: blur(3px); }
+.modal.show .modal-box { animation: modalIn .38s cubic-bezier(.2, .9, .3, 1.15) backwards; }
+.modal.closing { animation: fadeOut .2s ease forwards; }
+.modal.closing .modal-box { animation: modalOut .2s ease forwards; }
+@keyframes fadeIn  { from { opacity: 0; } }
+@keyframes fadeOut { to { opacity: 0; } }
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(24px) scale(.94); }
+}
+@keyframes modalOut {
+  to { opacity: 0; transform: translateY(12px) scale(.97); }
+}
+.close { transition: transform .25s var(--ease); }
+.close:hover { transform: rotate(90deg); }
+
+/* Komentar masuk satu per satu */
+.comment-item { animation: slideIn .4s var(--ease) backwards; }
+.comment-item:nth-child(2) { animation-delay: .06s; }
+.comment-item:nth-child(3) { animation-delay: .12s; }
+.comment-item:nth-child(4) { animation-delay: .18s; }
+.comment-item:nth-child(5) { animation-delay: .24s; }
+.comment-item:nth-child(n+6) { animation-delay: .3s; }
+@keyframes slideIn {
+  from { opacity: 0; translate: -14px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* ---------- Konfeti ---------- */
+.confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ---------- Hormati pengaturan "kurangi gerakan" ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .rv { opacity: 1; translate: none; }
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Myth - Komunitas Penggemar Buku</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="animations.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo"><svg class="logo-mark" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5C5.5 4.5 8.5 4.5 12 6.5c3.5-2 6.5-2 9-1v13c-2.5-1-5.5-1-9 1-3.5-2-6.5-2-9-1z"/><path d="M12 6.5v13"/></svg><span>Library Myth</span></div>
+    <nav>
+      <button class="nav-btn active" data-page="home">Beranda</button>
+      <button class="nav-btn" data-page="books">Buku</button>
+      <button class="nav-btn" data-page="discussion">Diskusi</button>
+      <button class="nav-btn" data-page="challenge">Tantangan</button>
+      <button class="nav-btn" data-page="library">Perpustakaan</button>
+      <button class="nav-btn admin-only hidden" data-page="admin">Admin</button>
+    </nav>
+    <div class="auth-area">
+      <span id="userChip" class="user-chip hidden"></span>
+      <button id="loginBtn" class="primary-btn">Masuk / Daftar</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="page active">
+      <div class="hero">
+        <div>
+          <span class="badge">KOMUNITAS PENGGEMAR BUKU</span>
+          <h1>Temukan buku.<br><span>Bagikan cerita.</span></h1>
+          <p>Tempat sederhana untuk menemukan rekomendasi, berdiskusi, mengikuti tantangan membaca, dan mengelola koleksi buku.</p>
+          <button class="primary-btn" onclick="showPage('books')">Jelajahi Buku →</button>
+        </div>
+        <div class="hero-book"><svg viewBox="0 0 24 24" fill="none" stroke="#87631e" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Buku"><path d="M3 5.5C5.5 4.5 8.5 4.5 12 6.5c3.5-2 6.5-2 9-1v13c-2.5-1-5.5-1-9 1-3.5-2-6.5-2-9-1z" fill="#f4ead7"/><path d="M12 6.5v13"/></svg></div>
+      </div>
+
+      <h2>Buku Pilihan</h2>
+      <div id="featuredBooks" class="book-grid"></div>
+
+      <div class="home-head"><h2>Diskusi Terbaru</h2><button class="small-btn" onclick="showPage('discussion')">Lihat semua →</button></div>
+      <div id="homeDiscussions" class="discussion-list"></div>
+
+      <div class="home-head"><h2>Tantangan Membaca</h2><button class="small-btn" onclick="showPage('challenge')">Lihat semua →</button></div>
+      <div id="homeChallenges" class="challenge-grid"></div>
+
+      <div class="stats">
+        <div><b id="statMembers">0</b><span>Anggota</span></div>
+        <div><b id="statBooks">0</b><span>Buku</span></div>
+        <div><b id="statDiscussions">0</b><span>Diskusi</span></div>
+        <div><b id="statChallenges">0</b><span>Tantangan</span></div>
+      </div>
+    </section>
+
+    <section id="books" class="page">
+      <div class="section-head">
+        <div>
+          <span class="badge">KOLEKSI</span>
+          <h1>Daftar Buku</h1>
+        </div>
+        <input id="searchBook" class="search" placeholder="Cari judul atau penulis...">
+      </div>
+      <div id="bookList" class="book-grid"></div>
+    </section>
+
+    <section id="discussion" class="page">
+      <div class="section-head">
+        <div>
+          <span class="badge">KOMUNITAS</span>
+          <h1>Diskusi Buku</h1>
+        </div>
+        <button class="primary-btn" onclick="openDiscussion()">+ Buat Diskusi</button>
+      </div>
+      <div id="discussionList" class="discussion-list"></div>
+    </section>
+
+    <section id="challenge" class="page">
+      <div class="section-head">
+        <div>
+          <span class="badge">READING CHALLENGE</span>
+          <h1>Tantangan Membaca</h1>
+        </div>
+      </div>
+      <div id="challengeList" class="challenge-grid"></div>
+    </section>
+
+    <section id="library" class="page">
+      <div class="section-head">
+        <div>
+          <span class="badge">KOLEKSI SAYA</span>
+          <h1>Perpustakaan Virtual</h1>
+        </div>
+      </div>
+      <div class="library-tabs">
+        <button class="tab active" onclick="filterLibrary('all', this)">Semua</button>
+        <button class="tab" onclick="filterLibrary('reading', this)">Sedang Dibaca</button>
+        <button class="tab" onclick="filterLibrary('finished', this)">Selesai</button>
+        <button class="tab" onclick="filterLibrary('want', this)">Ingin Dibaca</button>
+      </div>
+      <div id="libraryList" class="book-grid"></div>
+    </section>
+
+    <section id="admin" class="page">
+      <div class="section-head">
+        <div>
+          <span class="badge">ADMIN PANEL</span>
+          <h1>Dashboard Admin</h1>
+        </div>
+        <button class="primary-btn" onclick="openBookForm()">+ Tambah Buku</button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-card"><span>Total Buku</span><b id="adminBooks">0</b></div>
+        <div class="admin-card"><span>Diskusi</span><b id="adminDiscussion">0</b></div>
+        <div class="admin-card"><span>Tantangan</span><b id="adminChallenges">0</b></div>
+        <div class="admin-card"><span>Anggota</span><b id="adminMembers">0</b></div>
+      </div>
+
+      <div class="panel">
+        <h2>Manajemen Buku</h2>
+        <div id="adminBookTable"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Manajemen Tantangan</h2><button class="primary-btn" onclick="openChallengeForm()">+ Tambah Tantangan</button></div>
+        <div id="adminChallengeTable"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Moderasi Diskusi</h2>
+        <div id="moderationList"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal">
+    <div class="modal-box">
+      <button class="close" onclick="closeModal()">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <footer>
+    <b><svg class="logo-mark" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5C5.5 4.5 8.5 4.5 12 6.5c3.5-2 6.5-2 9-1v13c-2.5-1-5.5-1-9 1-3.5-2-6.5-2-9-1z"/><path d="M12 6.5v13"/></svg><span>Library Myth</span></b>
+    <span>Komunitas untuk orang yang suka membaca dan berdiskusi.</span>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="animations.js"></script>
+</body>
+</html>
